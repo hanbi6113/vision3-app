@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import '../data/watch_data.dart';
 import '../pages/home_page.dart';
-import '../pages/continue_watching_page.dart';
 import '../pages/rankings_page.dart';
 import '../pages/discover_page.dart';
 import '../pages/media_shell_page.dart';
@@ -22,19 +21,13 @@ class Vision3App extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF050608),
         useMaterial3: true,
       ),
-      initialRoute: '/',
+      initialRoute: '/discover',
       onGenerateRoute: (settings) {
         final uri = Uri.parse(settings.name ?? '/');
 
         if (uri.path == '/') {
           return MaterialPageRoute(
             builder: (_) => const HomePage(),
-          );
-        }
-
-        if (uri.path == '/continue-watching') {
-          return MaterialPageRoute(
-            builder: (_) => const ContinueWatchingPage(),
           );
         }
 
@@ -46,7 +39,9 @@ class Vision3App extends StatelessWidget {
 
         if (uri.path == '/discover') {
           return MaterialPageRoute(
-            builder: (_) => const DiscoverPage(activeGenre: GenreKey.rofan),
+            builder: (_) => const DiscoverPage(
+              activeGenre: GenreKey.rofan,
+            ),
           );
         }
 
@@ -113,8 +108,9 @@ class Vision3App extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => WatchPage(
                 title: title,
-                episodeNumber:
-                    int.tryParse(uri.queryParameters['episode'] ?? ''),
+                episodeNumber: int.tryParse(
+                  uri.queryParameters['episode'] ?? '',
+                ),
                 returnTo: uri.queryParameters['returnTo'],
               ),
             );
@@ -131,8 +127,9 @@ class Vision3App extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => WriterPage(
                 title: title,
-                episodeNumber:
-                    int.tryParse(uri.queryParameters['episode'] ?? ''),
+                episodeNumber: int.tryParse(
+                  uri.queryParameters['episode'] ?? '',
+                ),
                 returnTo: uri.queryParameters['returnTo'],
               ),
             );
@@ -140,7 +137,9 @@ class Vision3App extends StatelessWidget {
         }
 
         return MaterialPageRoute(
-          builder: (_) => const HomePage(),
+          builder: (_) => const DiscoverPage(
+            activeGenre: GenreKey.rofan,
+          ),
         );
       },
     );

@@ -137,23 +137,27 @@ class MediaShellPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = DiscoverPage.discoverData[activeGenre]!;
-    final copy = (mode == MediaMode.movies ? _movieCopy : _seriesCopy)[activeGenre]!;
+    final copy = (mode == MediaMode.movies
+        ? _movieCopy
+        : _seriesCopy)[activeGenre]!;
     final theme = _ShellTheme.fromContent(activeGenre, content);
     final currentImages = DiscoverPage.genreImages[activeGenre]!;
 
     final routeBase = mode == MediaMode.movies
         ? 'movies'
         : mode == MediaMode.discover
-            ? 'discover'
-            : 'series';
+        ? 'discover'
+        : 'series';
     final hallPath = '/$routeBase/${genreToPath(activeGenre)}';
 
-    final watchMode = mode == MediaMode.movies ? WatchMode.movies : WatchMode.series;
+    final watchMode = mode == MediaMode.movies
+        ? WatchMode.movies
+        : WatchMode.series;
     final watchSlug = watchEntrySlugByMode[watchMode]?[activeGenre];
     final freeDiscoverSlug =
         (discoverFreeSlugByGenre[activeGenre]?.isNotEmpty ?? false)
-            ? discoverFreeSlugByGenre[activeGenre]!.first
-            : watchEntrySlugByMode[WatchMode.series]?[activeGenre];
+        ? discoverFreeSlugByGenre[activeGenre]!.first
+        : watchEntrySlugByMode[WatchMode.series]?[activeGenre];
 
     final watchHref = watchSlug != null
         ? '/watch/$watchSlug?returnTo=${Uri.encodeComponent(hallPath)}'
@@ -167,15 +171,20 @@ class MediaShellPage extends StatelessWidget {
       (index) => currentImages[index % currentImages.length],
     );
 
+    final continueItems = _buildContinueItems(
+      activeGenre: activeGenre,
+      mode: mode,
+      content: content,
+      images: currentImages,
+      href: watchHref,
+    );
+
     return VisionScaffold(
       currentPath: _path,
       body: Stack(
         children: [
           Positioned.fill(
-            child: _GenreBackdrop(
-              genre: activeGenre,
-              theme: theme,
-            ),
+            child: _GenreBackdrop(genre: activeGenre, theme: theme),
           ),
           SafeArea(
             child: SingleChildScrollView(
@@ -205,23 +214,24 @@ class MediaShellPage extends StatelessWidget {
                         theme: theme,
                       ),
                       const SizedBox(height: 14),
-                      _HorizontalPosterOnlyShelf(
-                        images: posterImages,
+                      _ContinueWatchingShelf(
+                        items: continueItems,
                         theme: theme,
-                        posterWidth: 220,
-                        posterAspectRatio: 2 / 3,
                       ),
                       const SizedBox(height: 26),
                       _SectionTitle(
                         title: copy.trendingLabel,
-                        subtitle: mode == MediaMode.series ? 'Top Drama' : 'Top Movie',
+                        subtitle: mode == MediaMode.series
+                            ? 'Top Drama'
+                            : 'Top Movie',
                         theme: theme,
                       ),
                       const SizedBox(height: 14),
                       _HorizontalPosterOnlyShelf(
                         images: List<String>.generate(
                           5,
-                          (index) => currentImages[index % currentImages.length],
+                          (index) =>
+                              currentImages[index % currentImages.length],
                         ),
                         theme: theme,
                         posterWidth: 210,
@@ -250,7 +260,8 @@ class MediaShellPage extends StatelessWidget {
                       _HorizontalPosterOnlyShelf(
                         images: List<String>.generate(
                           6,
-                          (index) => currentImages[(index + 1) % currentImages.length],
+                          (index) =>
+                              currentImages[(index + 1) % currentImages.length],
                         ),
                         theme: theme,
                         posterWidth: 250,
@@ -265,7 +276,9 @@ class MediaShellPage extends StatelessWidget {
                       const SizedBox(height: 14),
                       _HorizontalPosterOnlyShelf(
                         images: [
-                          currentImages.length > 1 ? currentImages[1] : currentImages.first,
+                          currentImages.length > 1
+                              ? currentImages[1]
+                              : currentImages.first,
                           ...posterImages.take(3),
                         ],
                         theme: theme,
@@ -297,6 +310,56 @@ class MediaShellPage extends StatelessWidget {
       ),
     );
   }
+
+  List<_ContinueWatchingItem> _buildContinueItems({
+    required GenreKey activeGenre,
+    required MediaMode mode,
+    required DiscoverGenreContent content,
+    required List<String> images,
+    required String href,
+  }) {
+    final genreName = genreLabel(activeGenre);
+    final progressValues = [0.78, 0.64, 0.52, 0.41, 0.33];
+
+    return List<_ContinueWatchingItem>.generate(5, (index) {
+      final progress = progressValues[index % progressValues.length];
+      final image = images[index % images.length];
+
+      if (mode == MediaMode.movies) {
+        final watchedMinutes = (progress * 120).round();
+        final remainMinutes = (120 - watchedMinutes).clamp(12, 99);
+
+        return _ContinueWatchingItem(
+          badge: 'MOVIE',
+          title: index == 0
+              ? content.storyTitle
+              : '$genreName Selection ${index + 1}',
+          subtitle: '$genreName Hall · 시네마틱 큐레이션',
+          info: '$watchedMinutes분 시청 완료',
+          remainText: '$remainMinutes분 남음',
+          progress: progress,
+          image: image,
+          href: href,
+        );
+      }
+
+      final episode = index + 2;
+      final remainMinutes = (58 - (progress * 30).round()).clamp(8, 34);
+
+      return _ContinueWatchingItem(
+        badge: 'SERIES',
+        title: index == 0
+            ? content.storyTitle
+            : '$genreName Episode Track ${index + 1}',
+        subtitle: 'EP $episode · $genreName Drama',
+        info: '${(progress * 100).round()}% 시청 완료',
+        remainText: '$remainMinutes분 남음',
+        progress: progress,
+        image: image,
+        href: href,
+      );
+    });
+  }
 }
 
 class _GenreCopy {
@@ -318,6 +381,28 @@ class _GenreCopy {
     required this.shelfB,
     required this.editorLabel,
     required this.upcomingLabel,
+  });
+}
+
+class _ContinueWatchingItem {
+  final String badge;
+  final String title;
+  final String subtitle;
+  final String info;
+  final String remainText;
+  final double progress;
+  final String image;
+  final String href;
+
+  const _ContinueWatchingItem({
+    required this.badge,
+    required this.title,
+    required this.subtitle,
+    required this.info,
+    required this.remainText,
+    required this.progress,
+    required this.image,
+    required this.href,
   });
 }
 
@@ -367,7 +452,10 @@ class _ShellTheme {
     required this.heroPhotoOverlay,
   });
 
-  factory _ShellTheme.fromContent(GenreKey genre, DiscoverGenreContent content) {
+  factory _ShellTheme.fromContent(
+    GenreKey genre,
+    DiscoverGenreContent content,
+  ) {
     switch (genre) {
       case GenreKey.rofan:
         return _ShellTheme(
@@ -512,10 +600,7 @@ class _GenreBackdrop extends StatelessWidget {
   final GenreKey genre;
   final _ShellTheme theme;
 
-  const _GenreBackdrop({
-    required this.genre,
-    required this.theme,
-  });
+  const _GenreBackdrop({required this.genre, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -558,42 +643,27 @@ class _GenreBackdrop extends StatelessWidget {
           Positioned(
             left: -220,
             top: -360,
-            child: _BackdropGlow(
-              size: 760,
-              color: Color(0x3DFFD5E8),
-            ),
+            child: _BackdropGlow(size: 760, color: Color(0x3DFFD5E8)),
           ),
           Positioned(
             left: 80,
             top: -170,
-            child: _BackdropGlow(
-              size: 460,
-              color: Color(0x24FFF7FB),
-            ),
+            child: _BackdropGlow(size: 460, color: Color(0x24FFF7FB)),
           ),
           Positioned(
             right: -210,
             top: -230,
-            child: _BackdropGlow(
-              size: 700,
-              color: Color(0x36EAF2FF),
-            ),
+            child: _BackdropGlow(size: 700, color: Color(0x36EAF2FF)),
           ),
           Positioned(
             left: 110,
             bottom: -140,
-            child: _BackdropGlow(
-              size: 380,
-              color: Color(0x2EDFD9FF),
-            ),
+            child: _BackdropGlow(size: 380, color: Color(0x2EDFD9FF)),
           ),
           Positioned(
             right: 40,
             bottom: -120,
-            child: _BackdropGlow(
-              size: 360,
-              color: Color(0x26D8F3FF),
-            ),
+            child: _BackdropGlow(size: 360, color: Color(0x26D8F3FF)),
           ),
         ],
       );
@@ -621,10 +691,7 @@ class _BackdropGlow extends StatelessWidget {
   final double size;
   final Color color;
 
-  const _BackdropGlow({
-    required this.size,
-    required this.color,
-  });
+  const _BackdropGlow({required this.size, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -647,6 +714,7 @@ class _BackdropGlow extends StatelessWidget {
   }
 }
 
+// lib/pages/media_shell_page.dart
 class _GenreTabs extends StatelessWidget {
   final GenreKey activeGenre;
   final MediaMode mode;
@@ -683,7 +751,9 @@ class _GenreTabs extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
               color: active ? theme.activeChipBg : Colors.transparent,
               border: Border.all(
-                color: active ? theme.activeChipBorder : theme.inactiveChipBorder,
+                color: active
+                    ? theme.activeChipBorder
+                    : theme.inactiveChipBorder,
                 width: active ? 1.4 : 1,
               ),
               boxShadow: active
@@ -737,10 +807,7 @@ class _HeroCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            image,
-            fit: BoxFit.cover,
-          ),
+          Image.asset(image, fit: BoxFit.cover),
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -820,7 +887,9 @@ class _ActionButton extends StatelessWidget {
             border: Border.all(color: theme.heroSecondaryButtonBorder),
           );
 
-    final textColor = primary ? theme.heroButtonText : theme.heroSecondaryButtonText;
+    final textColor = primary
+        ? theme.heroButtonText
+        : theme.heroSecondaryButtonText;
 
     return InkWell(
       borderRadius: BorderRadius.circular(999),
@@ -880,6 +949,210 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
+class _ContinueWatchingShelf extends StatelessWidget {
+  final List<_ContinueWatchingItem> items;
+  final _ShellTheme theme;
+
+  const _ContinueWatchingShelf({required this.items, required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 214,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          return _ContinueWatchingCard(item: items[index], theme: theme);
+        },
+      ),
+    );
+  }
+}
+
+class _ContinueWatchingCard extends StatelessWidget {
+  final _ContinueWatchingItem item;
+  final _ShellTheme theme;
+
+  const _ContinueWatchingCard({required this.item, required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(28),
+      onTap: () => Navigator.pushNamed(context, item.href),
+      child: Container(
+        width: 380,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: theme.border),
+          color: theme.surface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 142,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(item.image, fit: BoxFit.cover),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.45),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 12,
+                    right: 12,
+                    bottom: 12,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(999),
+                      child: LinearProgressIndicator(
+                        value: item.progress,
+                        minHeight: 6,
+                        backgroundColor: Colors.white.withOpacity(0.26),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          theme.accentText,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.surfaceStrong,
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(color: theme.border),
+                      ),
+                      child: Text(
+                        item.badge,
+                        style: TextStyle(
+                          color: theme.accentText,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      item.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: theme.titleColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        height: 1.15,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      item.subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: theme.bodyColor,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      item.info,
+                      style: TextStyle(
+                        color: theme.accentText,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.remainText,
+                            style: TextStyle(
+                              color: theme.bodyColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: theme.heroButtonGradient,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.play_arrow_rounded,
+                                size: 16,
+                                color: theme.heroButtonText,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '이어보기',
+                                style: TextStyle(
+                                  color: theme.heroButtonText,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _HorizontalPosterOnlyShelf extends StatelessWidget {
   final List<String> images;
   final _ShellTheme theme;
@@ -920,10 +1193,7 @@ class _HorizontalPosterOnlyShelf extends StatelessWidget {
                 ],
               ),
               clipBehavior: Clip.antiAlias,
-              child: Image.asset(
-                images[index],
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(images[index], fit: BoxFit.cover),
             ),
           );
         },

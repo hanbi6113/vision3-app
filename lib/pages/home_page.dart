@@ -24,28 +24,44 @@ class HomePage extends StatelessWidget {
 
   static final List<Map<String, String>> continueWatching = [
     {
+      'badge': 'SERIES',
       'title': 'Glass Midnight',
-      'subtitle': 'EP 07 · 74% 시청',
+      'subtitle': 'EP 07 · Neo-noir Series',
+      'info': '74% 시청 완료',
+      'remainText': '16분 남음',
       'progress': '74%',
       'image': pickImage(1),
+      'href': '/series',
     },
     {
+      'badge': 'SERIES',
       'title': 'Ash Protocol',
-      'subtitle': 'EP 03 · 48% 시청',
+      'subtitle': 'EP 03 · Sci-Fi Thriller',
+      'info': '48% 시청 완료',
+      'remainText': '31분 남음',
       'progress': '48%',
       'image': pickImage(2),
+      'href': '/series',
     },
     {
+      'badge': 'SERIES',
       'title': 'Silent Harbor',
-      'subtitle': 'EP 05 · 63% 시청',
+      'subtitle': 'EP 05 · Mystery Film',
+      'info': '63% 시청 완료',
+      'remainText': '22분 남음',
       'progress': '63%',
       'image': pickImage(3),
+      'href': '/series',
     },
     {
+      'badge': 'SERIES',
       'title': 'Velvet Burn',
-      'subtitle': 'EP 02 · 29% 시청',
+      'subtitle': 'EP 02 · Original Drama',
+      'info': '29% 시청 완료',
+      'remainText': '39분 남음',
       'progress': '29%',
       'image': pickImage(4),
+      'href': '/series',
     },
   ];
 
@@ -197,22 +213,31 @@ class HomePage extends StatelessWidget {
             ),
             _SectionBlock(
               title: '계속 시청하기',
-              action: '전체 보기',
-              onTap: () => Navigator.pushNamed(context, '/continue-watching'),
-              child: SizedBox(
-                height: 328,
-                child: PageView.builder(
-                  controller: PageController(viewportFraction: 1),
-                  itemCount: continueWatching.length,
-                  padEnds: false,
-                  itemBuilder: (context, index) {
-                    final item = continueWatching[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 14),
-                      child: _ContinueWatchingCard(item: item),
-                    );
-                  },
-                ),
+              reserveActionSpace: true,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isCompact = constraints.maxWidth < 700;
+                  final cardHeight = 214.0;
+                  final viewportFraction = isCompact ? 0.94 : 0.58;
+
+                  return SizedBox(
+                    height: cardHeight,
+                    child: PageView.builder(
+                      controller: PageController(
+                        viewportFraction: viewportFraction,
+                      ),
+                      itemCount: continueWatching.length,
+                      padEnds: false,
+                      itemBuilder: (context, index) {
+                        final item = continueWatching[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 16),
+                          child: _ContinueWatchingCard(item: item),
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
             ),
             _SectionBlock(
@@ -228,7 +253,9 @@ class HomePage extends StatelessWidget {
                   return SizedBox(
                     height: cardHeight,
                     child: PageView.builder(
-                      controller: PageController(viewportFraction: viewportFraction),
+                      controller: PageController(
+                        viewportFraction: viewportFraction,
+                      ),
                       itemCount: topTen.length,
                       padEnds: false,
                       itemBuilder: (context, index) {
@@ -256,7 +283,9 @@ class HomePage extends StatelessWidget {
                   return SizedBox(
                     height: cardHeight,
                     child: PageView.builder(
-                      controller: PageController(viewportFraction: viewportFraction),
+                      controller: PageController(
+                        viewportFraction: viewportFraction,
+                      ),
                       itemCount: trendingNow.length,
                       padEnds: false,
                       itemBuilder: (context, index) {
@@ -284,7 +313,9 @@ class HomePage extends StatelessWidget {
                   return SizedBox(
                     height: cardHeight,
                     child: PageView.builder(
-                      controller: PageController(viewportFraction: viewportFraction),
+                      controller: PageController(
+                        viewportFraction: viewportFraction,
+                      ),
                       itemCount: discoverFree.length,
                       padEnds: false,
                       itemBuilder: (context, index) {
@@ -608,9 +639,9 @@ class _HeroInfoTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: Color.fromRGBO(255, 255, 255, 0.66),
-              fontSize: 11,
-              height: 1.2,
+              color: Color.fromRGBO(255, 255, 255, 0.60),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -626,20 +657,44 @@ class _HomeTopBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: const [
-        Positioned(
-          top: -120,
-          left: -20,
-          child: _GlowOrb(
-            size: 420,
-            color: Color.fromRGBO(82, 122, 255, 0.18),
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF0A0D14),
+                  Color(0xFF07090D),
+                  Color(0xFF050608),
+                ],
+                stops: [0.0, 0.46, 1.0],
+              ),
+            ),
           ),
         ),
         Positioned(
-          top: -40,
-          right: 30,
+          left: -120,
+          top: -90,
           child: _GlowOrb(
-            size: 320,
-            color: Color.fromRGBO(132, 42, 255, 0.18),
+            size: 340,
+            color: Color.fromRGBO(31, 201, 232, 0.16),
+          ),
+        ),
+        Positioned(
+          right: -80,
+          top: -60,
+          child: _GlowOrb(
+            size: 260,
+            color: Color.fromRGBO(74, 112, 255, 0.14),
+          ),
+        ),
+        Positioned(
+          right: 60,
+          top: 160,
+          child: _GlowOrb(
+            size: 220,
+            color: Color.fromRGBO(255, 255, 255, 0.04),
           ),
         ),
         Positioned.fill(
@@ -697,6 +752,7 @@ class _SectionBlock extends StatelessWidget {
   final String title;
   final String? action;
   final VoidCallback? onTap;
+  final bool reserveActionSpace;
   final Widget child;
 
   const _SectionBlock({
@@ -704,6 +760,7 @@ class _SectionBlock extends StatelessWidget {
     required this.child,
     this.action,
     this.onTap,
+    this.reserveActionSpace = false,
   });
 
   @override
@@ -721,6 +778,7 @@ class _SectionBlock extends StatelessWidget {
                   title: title,
                   action: action,
                   onTap: onTap,
+                  reserveActionSpace: reserveActionSpace,
                 ),
                 const SizedBox(height: 18),
                 child,
@@ -737,11 +795,13 @@ class _SectionHeader extends StatelessWidget {
   final String title;
   final String? action;
   final VoidCallback? onTap;
+  final bool reserveActionSpace;
 
   const _SectionHeader({
     required this.title,
     this.action,
     this.onTap,
+    this.reserveActionSpace = false,
   });
 
   @override
@@ -780,6 +840,11 @@ class _SectionHeader extends StatelessWidget {
                 ),
               ),
             ),
+          )
+        else if (reserveActionSpace)
+          const SizedBox(
+            width: 92,
+            height: 42,
           ),
       ],
     );
@@ -802,126 +867,190 @@ class _ContinueWatchingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = item['progress'] ?? '0%';
+    final progressValue = _progressValue(progress);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color.fromRGBO(255, 255, 255, 0.03),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: const Color.fromRGBO(255, 255, 255, 0.10),
-        ),
+    return InkWell(
+      borderRadius: BorderRadius.circular(28),
+      onTap: () => Navigator.pushNamed(
+        context,
+        item['href'] ?? '/series',
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(item['image']!, fit: BoxFit.cover),
-                const DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color.fromRGBO(6, 10, 18, 0.08),
-                        Color.fromRGBO(6, 10, 18, 0.18),
-                        Color.fromRGBO(0, 0, 0, 0.78),
-                      ],
-                      stops: [0.0, 0.38, 1.0],
+      child: Container(
+        width: 380,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: const Color.fromRGBO(255, 255, 255, 0.10),
+          ),
+          color: const Color.fromRGBO(255, 255, 255, 0.04),
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.28),
+              blurRadius: 18,
+              offset: Offset(0, 10),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 142,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    item['image']!,
+                    fit: BoxFit.cover,
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          Color.fromRGBO(0, 0, 0, 0.50),
+                          Color.fromRGBO(0, 0, 0, 0.00),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    left: 12,
+                    right: 12,
+                    bottom: 12,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(999),
+                      child: LinearProgressIndicator(
+                        value: progressValue,
+                        minHeight: 6,
+                        backgroundColor: const Color.fromRGBO(
+                          255,
+                          255,
+                          255,
+                          0.22,
+                        ),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item['title']!,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 19,
-                    fontWeight: FontWeight.w700,
-                  ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(255, 255, 255, 0.08),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: const Color.fromRGBO(255, 255, 255, 0.10),
+                        ),
+                      ),
+                      child: Text(
+                        item['badge'] ?? 'SERIES',
+                        style: const TextStyle(
+                          color: Color.fromRGBO(255, 255, 255, 0.82),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      item['title'] ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        height: 1.15,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      item['subtitle'] ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color.fromRGBO(255, 255, 255, 0.64),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      item['info'] ?? '$progress 시청 완료',
+                      style: const TextStyle(
+                        color: Color.fromRGBO(255, 255, 255, 0.82),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item['remainText'] ?? '',
+                            style: const TextStyle(
+                              color: Color.fromRGBO(255, 255, 255, 0.56),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            color: const Color.fromRGBO(255, 255, 255, 0.12),
+                            border: Border.all(
+                              color: const Color.fromRGBO(255, 255, 255, 0.12),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.play_arrow_rounded,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                '이어보기',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  item['subtitle']!,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 0.62),
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    value: _progressValue(progress),
-                    minHeight: 8,
-                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.10),
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '$progress 시청 완료',
-                  style: const TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 0.52),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                _SmallActionPill(
-                  label: '이어서 보기',
-                  onTap: () {},
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SmallActionPill extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _SmallActionPill({
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(999),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(999),
-          color: const Color.fromRGBO(255, 255, 255, 0.10),
-          border: Border.all(
-            color: const Color.fromRGBO(255, 255, 255, 0.12),
-          ),
-        ),
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+          ],
         ),
       ),
     );
@@ -960,51 +1089,35 @@ class _TopTenCard extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   Color.fromRGBO(0, 0, 0, 0.04),
-                  Color.fromRGBO(0, 0, 0, 0.22),
-                  Color.fromRGBO(0, 0, 0, 0.82),
+                  Color.fromRGBO(0, 0, 0, 0.16),
+                  Color.fromRGBO(0, 0, 0, 0.88),
                 ],
-                stops: [0.0, 0.42, 1.0],
+                stops: [0.0, 0.40, 1.0],
               ),
             ),
           ),
           Positioned(
-            left: 16,
-            top: 14,
-            child: Text(
-              '${item['rank']}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 52,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -2,
-                height: 1,
+            left: 14,
+            top: 12,
+            child: Container(
+              width: 42,
+              height: 42,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color.fromRGBO(0, 0, 0, 0.40),
+                border: Border.all(
+                  color: const Color.fromRGBO(255, 255, 255, 0.16),
+                ),
               ),
-            ),
-          ),
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item['title'] as String,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
+              child: Text(
+                '${item['rank']}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  item['subtitle'] as String,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 0.64),
-                    fontSize: 13,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -1034,18 +1147,21 @@ class _PosterCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(item['image']!, fit: BoxFit.cover),
+          Image.asset(
+            item['image']!,
+            fit: BoxFit.cover,
+          ),
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color.fromRGBO(0, 0, 0, 0.03),
-                  Color.fromRGBO(0, 0, 0, 0.18),
-                  Color.fromRGBO(0, 0, 0, 0.82),
+                  Color.fromRGBO(0, 0, 0, 0.04),
+                  Color.fromRGBO(0, 0, 0, 0.14),
+                  Color.fromRGBO(0, 0, 0, 0.86),
                 ],
-                stops: [0.0, 0.4, 1.0],
+                stops: [0.0, 0.40, 1.0],
               ),
             ),
           ),
@@ -1056,46 +1172,20 @@ class _PosterCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(999),
+                color: const Color.fromRGBO(0, 0, 0, 0.34),
                 border: Border.all(
-                  color: const Color.fromRGBO(255, 255, 255, 0.16),
+                  color: const Color.fromRGBO(255, 255, 255, 0.12),
                 ),
-                color: const Color.fromRGBO(0, 0, 0, 0.26),
               ),
               child: Text(
                 item['badge']!,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.1,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
                 ),
               ),
-            ),
-          ),
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item['title']!,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  item['subtitle']!,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 0.62),
-                    fontSize: 13,
-                  ),
-                ),
-              ],
             ),
           ),
         ],
@@ -1113,193 +1203,38 @@ class _DiscoverFreeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isCompact = constraints.maxWidth < 520;
-
-        if (isCompact) {
-          return Container(
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color.fromRGBO(255, 255, 255, 0.10),
+        ),
+        color: const Color.fromRGBO(255, 255, 255, 0.03),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            item['image']!,
+            fit: BoxFit.cover,
+          ),
+          const DecoratedBox(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: const Color.fromRGBO(255, 255, 255, 0.10),
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color.fromRGBO(0, 0, 0, 0.66),
+                  Color.fromRGBO(0, 0, 0, 0.20),
+                  Color.fromRGBO(0, 0, 0, 0.58),
+                ],
+                stops: [0.0, 0.45, 1.0],
               ),
-              color: const Color.fromRGBO(255, 255, 255, 0.03),
             ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.asset(item['image']!, fit: BoxFit.cover),
-                      const DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color.fromRGBO(6, 10, 18, 0.08),
-                              Color.fromRGBO(6, 10, 18, 0.18),
-                              Color.fromRGBO(0, 0, 0, 0.78),
-                            ],
-                            stops: [0.0, 0.38, 1.0],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 16,
-                        top: 16,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(
-                              color: const Color.fromRGBO(34, 211, 238, 0.30),
-                            ),
-                            color: const Color.fromRGBO(34, 211, 238, 0.15),
-                          ),
-                          child: const Text(
-                            'Free',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFCFFAFE),
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item['title']!,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        item['subtitle']!,
-                        style: const TextStyle(
-                          color: Color.fromRGBO(255, 255, 255, 0.62),
-                          fontSize: 14,
-                          height: 1.7,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: const Color.fromRGBO(255, 255, 255, 0.10),
-            ),
-            color: const Color.fromRGBO(255, 255, 255, 0.03),
           ),
-          clipBehavior: Clip.antiAlias,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(item['image']!, fit: BoxFit.cover),
-                    const DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color.fromRGBO(6, 10, 18, 0.08),
-                            Color.fromRGBO(6, 10, 18, 0.18),
-                            Color.fromRGBO(0, 0, 0, 0.78),
-                          ],
-                          stops: [0.0, 0.38, 1.0],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 16,
-                      top: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(
-                            color: const Color.fromRGBO(34, 211, 238, 0.30),
-                          ),
-                          color: const Color.fromRGBO(34, 211, 238, 0.15),
-                        ),
-                        child: const Text(
-                          'Free',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFCFFAFE),
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  width: 220,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item['title']!,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        item['subtitle']!,
-                        style: const TextStyle(
-                          color: Color.fromRGBO(255, 255, 255, 0.62),
-                          fontSize: 14,
-                          height: 1.7,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
@@ -1417,47 +1352,80 @@ class _MarketFeatureCardState extends State<_MarketFeatureCard> {
             ),
           ),
           Positioned(
-            left: 28,
-            right: 28,
-            bottom: 28,
+            left: 22,
+            right: 22,
+            bottom: 22,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 520),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'VISION3 EXPANSION',
-                    style: TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.52),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 2.1,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: const Color.fromRGBO(255, 255, 255, 0.16),
+                      ),
+                      color: const Color.fromRGBO(0, 0, 0, 0.30),
+                    ),
+                    child: const Text(
+                      'WORLD EXPANSION',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.1,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Text(
                     widget.title,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 42,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -1.2,
-                      height: 1.04,
+                      fontSize: 40,
+                      fontWeight: FontWeight.w800,
+                      height: 0.98,
+                      letterSpacing: -1,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   const Text(
-                    '작품 소비 이후 굿즈, 세계관 확장, 팬 경험으로 연결되는 Market 섹션입니다.',
+                    '작품 감상을 넘어 굿즈, 세계관 확장, 팬 경험까지 연결되는 Vision3 Market 공간.',
                     style: TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.68),
-                      fontSize: 15,
-                      height: 1.8,
+                      color: Color.fromRGBO(255, 255, 255, 0.78),
+                      fontSize: 14,
+                      height: 1.55,
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  _SmallActionPill(
-                    label: widget.cta,
+                  const SizedBox(height: 16),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(999),
                     onTap: () => Navigator.pushNamed(context, '/market'),
+                    child: Container(
+                      height: 46,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        color: const Color.fromRGBO(255, 255, 255, 0.12),
+                        border: Border.all(
+                          color: const Color.fromRGBO(255, 255, 255, 0.14),
+                        ),
+                      ),
+                      child: Text(
+                        widget.cta,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -1468,3 +1436,4 @@ class _MarketFeatureCardState extends State<_MarketFeatureCard> {
     );
   }
 }
+ 
